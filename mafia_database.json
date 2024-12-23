@@ -1,44 +1,60 @@
 {
-    "me": {
-        "games": [
-            {
-                "role": "black",
-                "result": "win",
-                "timestamp": "2024-11-21 22:46:58"
-            }
-        ]
+    "players": {
+        "Nikita": {
+            "games_played": 0,
+            "wins": 0,
+            "roles": {}
+        },
+        "Roman": {
+            "games_played": 0,
+            "wins": 0,
+            "roles": {}
+        },
+        "Roman2": {
+            "games_played": 0,
+            "wins": 0,
+            "roles": {}
+        },
+        "Roman4": {
+            "games_played": 0,
+            "wins": 0,
+            "roles": {}
+        },
+        "Roman6": {
+            "games_played": 0,
+            "wins": 0,
+            "roles": {}
+        },
+        "Roman9": {
+            "games_played": 0,
+            "wins": 0,
+            "roles": {}
+        }
     },
-    "\u0413\u0430\u0441\u0442\u0435\u043b\u043b\u0430": {
-        "games": []
-    },
-    "Michaello\ud83d\udc7d": {
-        "games": []
-    },
-    "Ola-la": {
-        "games": []
-    },
-    "Columbo\ud83d\udeac\ud83d\udd75\ufe0f\u200d\u2642\ufe0f": {
-        "games": []
-    },
-    "Milkmaid\ud83c\udf7c": {
-        "games": []
-    },
-    "\u041c\u0430\u043b\u044c\u0432\u0430": {
-        "games": []
-    },
-    "\u0412\u0438\u043a\u043b\u0430\u0434\u0430\u0447": {
-        "games": []
-    },
-    "Nikitos": {
-        "games": [
-            {
-                "role": "Don",
-                "result": "loose",
-                "timestamp": "2024-11-21 23:46:36"
-            }
-        ]
-    },
-    "\u041c\u0443\u0440\u043e\u043c\u0435\u0446\u044c": {
-        "games": []
-    }
+    "games": [
+        {
+            "host": "Nikita",
+            "roles": {
+                "Don": "Roman",
+                "Commissar": "Roman2",
+                "Mafia": [
+                    "Roman4",
+                    "Roman6"
+                ],
+                "People": [
+                    "Roman9"
+                ]
+            },
+            "current_role": "People",
+            "players": [
+                "Nikita",
+                "Roman",
+                "Roman2",
+                "Roman4",
+                "Roman6",
+                "Roman9"
+            ],
+            "page": 1
+        }
+    ]
 }
