@@ -1,0 +1,9 @@
+
+def add_player(username: str) -> bool:
+    ...
+    
+def remove_player(username: str) -> bool:
+    ...
+    
+def check_player_in_database(username: str) -> bool:
+    ...

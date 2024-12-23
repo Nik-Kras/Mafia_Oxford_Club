@@ -270,6 +270,10 @@ from telegram.ext import (
     ContextTypes,
 )
 import os
+from dotenv import load_dotenv
+
+load_dotenv()
+BOT_TOKEN = os.getenv('BOT_TOKEN')
 
 # Constants
 DB_FILE = "mafia_database.json"
@@ -502,7 +506,7 @@ async def handle_role_assignment(update: Update, context: ContextTypes.DEFAULT_T
 
 # Add CallbackQueryHandler for role assignment
 def main():
-    application = ApplicationBuilder().token("7618494324:AAHDX6QgeH7dT3rKEDTE-8Jbp9fm_smuaWI").build()
+    application = ApplicationBuilder().token(BOT_TOKEN).build()
 
     application.add_handler(CommandHandler("help", help_command))
     application.add_handler(CommandHandler("add", add_command))
