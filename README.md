@@ -6,8 +6,9 @@ Project Structure:
 
 1. Players
 * Filename: players.json
-* Description: A list of unique players.
+* Description: A list of unique players. PS: Could be used to keep real name and username pairs
 * Purpose: Will be used to select a player from the list of all possible players to either add to the game or view their stats
+
 Example:
 ```json
 [
@@ -40,7 +41,6 @@ Example:
         ],
         "Victory": "Team_Red",
     },
-    ...
 ]
 ```
 
@@ -62,7 +62,6 @@ Example:
         "Team_Red": {"played": 5, "won": 2, "survived": 4},
         "Elo_rating": "Not Implemented",
     },
-    ...
 }
 ```
 

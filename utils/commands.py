@@ -1,14 +1,17 @@
+from telegram import Update
+from telegram.ext import ContextTypes
 import utils.game as game
 import utils.player as player
 import utils.stats as stats
 
 
-def play():
+async def play(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """
     Description: Commands to add or remove players from the players.json
     Permission: Admin only
     """
-    ...
+    game.select_players(update, context)
+
 
 def view_games():
     """
@@ -41,7 +44,11 @@ def remove_player(username: str):
     
 def view_players():
     """ Shows a list of all players from the database """
-    return player.get_all_players()
+    players = player.get_all_players()
+    if players:
+        players_message = '\n'.join(players)
+        return f"Players:\n{players_message}"
+    return "No players found."
 
 def help():
     """

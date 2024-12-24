@@ -37,15 +37,13 @@ def remove_player(username: str) -> bool:
     except Exception as e:
         return f"Error: {e}"
     
-def get_all_players() -> str:
+def get_all_players() -> list:
     """Returns a string of all players."""
+    players = []
     try:
         with open(PLAYERS_FILE, "r") as file:
             players = json.load(file)
-
-        if players:
-            return "\n".join(players)
-        return "No players found."
-
     except Exception as e:
-        return f"Error: {e}"
+        print(f"Error: {e}")
+
+    return players

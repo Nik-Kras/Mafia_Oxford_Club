@@ -1,14 +1,30 @@
+from telegram import Update
+from telegram.ext import ContextTypes
+import utils.player as player
+from utils.utils import get_paginated_keyboard
 
-def play_game():
+async def play_game(update: Update, context: ContextTypes.DEFAULT_TYPE):
     # Everything from setecting teams to selecting victory and saving a record
-    ...
+    await select_players(update, context)
+
+async def select_players(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """ Selects a set of players for the current game, no roles assigned but players are ordered """
+    all_players = player.get_all_players()
+    context.user_data['page'] = 0
+    context.user_data['remaining_users'] = all_players.copy()
+    context.user_data['selected_users'] = []
+
+    await update.message.reply_text(
+        "Select users:",
+        reply_markup=get_paginated_keyboard(context.user_data['remaining_users'], context.user_data['page'])
+    )
     
-def select_team(team: str):
+def assign_role_to_player():
+    """ A player is assigned with a role """
+
     # team == red or black
     # iteratively add players and their roles to the team: red -> Commisar or Civilian; black -> Don or Mafia
     ...
-    
-def assign_role_to_player():
     ...
     
 def kill_player(username: str):
