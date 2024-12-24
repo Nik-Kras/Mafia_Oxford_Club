@@ -171,4 +171,4 @@ cython_debug/
 .pypirc
 
 *.json
-mafia_database.json
+logs/*.log
