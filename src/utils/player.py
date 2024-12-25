@@ -18,7 +18,7 @@ def add_player(username: str) -> bool:
 
     except Exception as e:
         raise e
-        return f"Error: {e}"
+        # return f"Error: {e}"
     
 def remove_player(username: str) -> bool:
     """Removes a player from the players.json database."""
