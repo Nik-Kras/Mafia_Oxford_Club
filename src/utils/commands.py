@@ -1,8 +1,8 @@
 from telegram import Update
 from telegram.ext import ContextTypes
-import utils.game as game
-import utils.player as player
-import utils.stats as stats
+import src.utils.game as game
+import src.utils.player as player
+import src.utils.stats as stats
 
 
 async def play(update: Update, context: ContextTypes.DEFAULT_TYPE):

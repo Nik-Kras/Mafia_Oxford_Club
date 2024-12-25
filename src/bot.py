@@ -1,8 +1,8 @@
 from telegram import Update
 from telegram.ext import Application, CommandHandler, ContextTypes, CallbackQueryHandler
-import utils.commands as commands
-import utils.game as game
-from utils.utils import get_paginated_keyboard
+import src.utils.commands as commands
+import src.utils.game as game
+from src.utils.utils import get_paginated_keyboard
 from dotenv import load_dotenv
 import logging
 import os
@@ -95,15 +95,15 @@ async def handle_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     def extract_data_from_query(query):
         """ Query returns just one string, but it is multifunction. This function extracts information """
-        if ";" in query.data:
-            N = len(query.data.split(";"))
+        if "§" in query.data:
+            N = len(query.data.split("§"))
             if N == 2:
-                func, data = query.data.split(";")
+                func, data = query.data.split("§")
                 return {"function": func, "data": data}
         else:
             return {"function": query.data}
-
     query_data = extract_data_from_query(query)
+    print(query_data)
 
     if query_data["function"] == "page":
         page = int(query_data["data"])
@@ -116,14 +116,16 @@ async def handle_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
         username = query_data["data"]
 
         logger.info("User %s is selecting: %s", query.from_user.username, username)
-        logger.info("Remaining users before removal: %s", context.user_data['remaining_users'])
-        logger.info("Selected users before addition: %s", context.user_data['selected_users'])
+        logger.debug("Remaining users before removal: %s", context.user_data['remaining_users'])
+        logger.debug("Selected users before addition: %s", context.user_data['selected_users'])
+
+        print("context.user_data['remaining_users']: ", context.user_data['remaining_users'])
 
         if username in context.user_data['remaining_users']:
             context.user_data['selected_users'].append(username)
             context.user_data['remaining_users'].remove(username)
 
-            logger.info("Remaining users after removal: %s", context.user_data['remaining_users'])
+            logger.debug("Remaining users after removal: %s", context.user_data['remaining_users'])
             logger.info("Selected users after addition: %s", context.user_data['selected_users'])
         else:
             logger.error("Error: %s not found in remaining_users for user %s.", username, query.from_user.username)

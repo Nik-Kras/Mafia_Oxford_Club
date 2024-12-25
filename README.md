@@ -32,7 +32,7 @@ Example:
         "Host": "Roman",
         "Team_Red":
         [
-            {"player": "Nikitos", "role": "Comissar", "status": "alive"},
+            {"player": "Nikitos", "role": "Commissar", "status": "alive"},
             {"player": "Vukladach", "role": "Citizen", "status": "alive"}
         ],
         "Team_Black":
@@ -57,7 +57,7 @@ Example:
         "Don": {"played": 10, "won": 8, "survived": 6},
         "Mafia": {"played": 1, "won": 0, "survived": 0},
         "Team_Black": {"played": 11, "won": 8, "survived": 6},
-        "Comissar": {"played": 0, "won": 0, "survived": 0},
+        "Commissar": {"played": 0, "won": 0, "survived": 0},
         "Citizen": {"played": 5, "won": 2, "survived": 4},
         "Team_Red": {"played": 5, "won": 2, "survived": 4},
         "Elo_rating": "Not Implemented",
