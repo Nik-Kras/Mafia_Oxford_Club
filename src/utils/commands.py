@@ -4,6 +4,10 @@ import src.utils.game as game
 import src.utils.player as player
 import src.utils.stats as stats
 from src.utils.utils import get_paginated_keyboard, is_admin, STATES, ROLES
+import json
+from datetime import datetime
+
+GAME_RECORDS_FILE = "database/games.json"
     
 # Handler: Player Selection
 async def handle_player_selection(update: Update, context: ContextTypes.DEFAULT_TYPE, logger):
@@ -132,8 +136,11 @@ async def handle_killing_player(update: Update, context: ContextTypes.DEFAULT_TY
         )
     elif data == "finish":
         context.user_data["state"] = STATES["SELECTING_WINNER"]
-        await query.edit_message_text("Killing phase complete. Proceed to select the winning team.")
-        logger.info("User finished the killing phase.")
+        await query.edit_message_text(
+            text="Killing phase complete. Select the winning team:",
+            reply_markup=get_winning_team_keyboard()
+        )
+        logger.info("User finished the killing phase and moved to winner selection.")
     else:
         logger.warning("Unhandled callback data in killing phase: %s", data)
 
@@ -167,13 +174,99 @@ async def handle_kill_confirmation(update: Update, context: ContextTypes.DEFAULT
 # Handler: Selecting Winner
 async def handle_selecting_winner(update: Update, context: ContextTypes.DEFAULT_TYPE, logger):
     query = update.callback_query
-    winning_team = query.data.split("§")[1]
+    data = query.data
 
-    context.user_data["winning_team"] = winning_team
-    logger.info("Winning team: %s.", winning_team)
+    if data.startswith("win§"):
+        winning_team = data.split("§")[1]
+        context.user_data["winning_team"] = winning_team
+        logger.info("Winning team: %s.", winning_team)
 
-    await query.edit_message_text(f"Game over! Winning team: {winning_team}")
+        # Generate game statistics
+        statistics = generate_game_statistics(context)
+        await query.edit_message_text(
+            text=f"Game Over!\nWinning Team: {winning_team}\n\nStatistics:\n{statistics}"
+        )
 
+        # Save the game record
+        record_game(context.user_data, logger)
+    else:
+        logger.warning("Unhandled callback data in winner selection: %s", data)
+
+
+def generate_game_statistics(context):
+    """Generate a summary of the game statistics."""
+    assigned_roles = context.user_data["assigned_roles"]
+    statistics = ""
+
+    for player, details in assigned_roles.items():
+        status = "alive" if details["survived"] else "dead"
+        statistics += f"{player}: {details['role']} ({status})\n"
+
+    return statistics
+
+
+def record_game(user_data, logger):
+    """Save the game record to a JSON file."""
+    assigned_roles = user_data["assigned_roles"]
+    winning_team = user_data["winning_team"]
+    host = user_data.get("host", "Unknown")
+
+    # Organize players by team
+    team_red = [
+        {"player": player, "role": details["role"], "status": "alive" if details["survived"] else "dead"}
+        for player, details in assigned_roles.items()
+        if details["role"] in ["Citizen", "Commissar"]
+    ]
+
+    team_black = [
+        {"player": player, "role": details["role"], "status": "alive" if details["survived"] else "dead"}
+        for player, details in assigned_roles.items()
+        if details["role"] in ["Mafia", "Don"]
+    ]
+
+    # Create game record
+    game_id = get_next_game_id()
+    game_record = {
+        "Game_ID": game_id,
+        "Date": datetime.now().strftime("%d.%m.%Y"),
+        "Host": host,
+        "Team_Red": team_red,
+        "Team_Black": team_black,
+        "Victory": winning_team,
+    }
+
+    # Save to file
+    try:
+        with open(GAME_RECORDS_FILE, "r") as file:
+            records = json.load(file)
+    except FileNotFoundError:
+        records = []
+
+    records.append(game_record)
+
+    with open(GAME_RECORDS_FILE, "w") as file:
+        json.dump(records, file, indent=4)
+
+    logger.info(f"Game record saved: {game_record}")
+
+
+def get_next_game_id():
+    """Generate the next game ID."""
+    try:
+        with open(GAME_RECORDS_FILE, "r") as file:
+            records = json.load(file)
+        return max(record["Game_ID"] for record in records) + 1
+    except (FileNotFoundError, ValueError):
+        return 1
+
+
+def get_winning_team_keyboard():
+    """Generate inline keyboard for selecting the winning team."""
+    return InlineKeyboardMarkup([
+        [InlineKeyboardButton("Mafia Won", callback_data="win§Mafia")],
+        [InlineKeyboardButton("City Won", callback_data="win§City")]
+    ])
+    
 
 def view_games():
     """
