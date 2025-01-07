@@ -6,7 +6,7 @@ import os
 
 
 PAGE_SIZE = 5
-ROLES = ("Mafia", "Don", "Citizen", "Commissar")
+ROLES = ("Mafia", "Don", "Citizen", "Commissar", "Host")
 TEAMS = ("Team_Red", "Team_Black")
 STATES = {
     "SELECTING_PLAYERS": "selecting_players",
@@ -28,7 +28,7 @@ def get_paginated_keyboard(users, page, prefix="kill"):
     start = page * PAGE_SIZE
     end = start + PAGE_SIZE
     buttons = [
-        [InlineKeyboardButton(user, callback_data=f"{prefix}§{user}")] for user in users[start:end]
+        [InlineKeyboardButton(user, callback_data=f"{prefix}§{user}")] for user in users[start:end] # Don't you dare to change §! It will not work without it
     ]
 
     nav_buttons = []

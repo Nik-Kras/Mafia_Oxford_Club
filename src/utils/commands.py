@@ -85,7 +85,10 @@ async def handle_role_assignment(update: Update, context: ContextTypes.DEFAULT_T
     query = update.callback_query
     _, player, role = query.data.split("§")
 
-    context.user_data["assigned_roles"][player] = {"role": role, "survived": True}
+    if role == "Host":
+        context.user_data["host"] = player
+    else:
+        context.user_data["assigned_roles"][player] = {"role": role, "survived": True}
     logger.info("Assigned role %s to player %s.", role, player)
 
     context.user_data["role_assignment"]["current_index"] += 1
