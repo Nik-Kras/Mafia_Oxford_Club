@@ -117,7 +117,7 @@ async def view_leaderboard(update: Update, context: ContextTypes.DEFAULT_TYPE) -
         sort_by = sort_options.get(context.args[0].lower(), "Team_Red")
     
     leaderboard = get_leaderboard(sort_by)
-    await update.message.reply_text(leaderboard)
+    await update.message.reply_text(f"```{leaderboard}```", parse_mode='MarkdownV2')
 
 async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Display help message."""

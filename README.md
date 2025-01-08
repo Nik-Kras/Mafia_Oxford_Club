@@ -39,7 +39,7 @@ Example:
         [
             {"player": "Rysalochka", "role": "Don", "status": "dead"}
         ],
-        "Victory": "Team_Red",
+        "Victory": "City",
     },
 ]
 ```
@@ -60,6 +60,7 @@ Example:
         "Commissar": {"played": 0, "won": 0, "survived": 0},
         "Citizen": {"played": 5, "won": 2, "survived": 4},
         "Team_Red": {"played": 5, "won": 2, "survived": 4},
+        "Host": 1203,
         "Elo_rating": "Not Implemented",
     },
 }
