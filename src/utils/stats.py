@@ -97,10 +97,10 @@ def generate_leaderboard_string(sort_by: str ):
     leaderboard_data.sort(key=sort_keys.get(sort_by, sort_keys["Elo"]), reverse=True)
 
     # Define fixed column widths
-    RANK_WIDTH = 4
-    PLAYER_WIDTH = 20
+    RANK_WIDTH = 3
+    PLAYER_WIDTH = 17
     WR_WIDTH = 8
-    ELO_WIDTH = 8
+    ELO_WIDTH = 4
 
     def pad_string(text, width, align='left'):
         """Pad string to exact width with proper alignment."""

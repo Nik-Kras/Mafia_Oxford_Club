@@ -85,8 +85,6 @@ async def view_player_stats(update: Update, context: ContextTypes.DEFAULT_TYPE) 
 
 async def view_leaderboard(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Display player leaderboard."""
-    print(update)
-    print(context)
     sort_options = {
         "red": "Team_Red",
         "black": "Team_Black",
