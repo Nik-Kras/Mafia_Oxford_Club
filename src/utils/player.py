@@ -1,4 +1,3 @@
-# Done
 from .json_utils import load_json, save_json, PLAYERS_FILE
 
 def add_player_to_db(username: str) -> bool:

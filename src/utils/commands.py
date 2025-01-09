@@ -5,6 +5,8 @@ from .verification import is_admin
 from .player import add_player_to_db, remove_player_from_db, get_all_players
 from .stats import get_leaderboard, get_game, load_player_stats
 from .game import start_selecting_players
+from .json_utils import load_json, PLAYERS_FILE
+from .utils import get_paginated_keyboard
 
 def admin_required():
     def decorator(func):
@@ -68,44 +70,22 @@ async def view_game(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
 
 async def view_player_stats(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Display player statistics."""
-    if not context.args:
-        await update.message.reply_text("Usage: /stats <username>")
-        return
+    all_players = load_json(PLAYERS_FILE)
+
+    context.user_data["state"] = "SELECT_FOR_STATS"
+    context.user_data["remaining_users"] = all_players.copy()
+    context.user_data["page"] = 0
     
-    username = context.args[0]
-    stats = load_player_stats(username)
-    
-    if not stats:
-        await update.message.reply_text(f"No statistics found for {username}")
-        return
-    
-    message = f"📊 Statistics for {username}\n\n"
-    
-    # Team stats
-    message += "Team Performance:\n"
-    for team in ["Team_Red", "Team_Black"]:
-        games = stats[team]["played"]
-        if games > 0:
-            winrate = (stats[team]["won"] / games) * 100
-            survivalrate = (stats[team]["survived"] / games) * 100
-            message += f"{team}: {games} games, {winrate:.1f}% wins, {survivalrate:.1f}% survival\n"
-    
-    # Role stats
-    message += "\nRole Performance:\n"
-    for role in ["Don", "Mafia", "Commissar", "Citizen"]:
-        games = stats[role]["played"]
-        if games > 0:
-            winrate = (stats[role]["won"] / games) * 100
-            survivalrate = (stats[role]["survived"] / games) * 100
-            message += f"{role}: {games} games, {winrate:.1f}% wins, {survivalrate:.1f}% survival\n"
-    
-    # Elo rating
-    message += f"\nElo Rating: {stats['Elo_rating']}"
-    
-    await update.message.reply_text(message)
+    await update.message.reply_text(
+        "Select players for the game:",
+        reply_markup=get_paginated_keyboard(all_players, 0, "select")
+    )
+
 
 async def view_leaderboard(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Display player leaderboard."""
+    print(update)
+    print(context)
     sort_options = {
         "red": "Team_Red",
         "black": "Team_Black",

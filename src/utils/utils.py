@@ -1,6 +1,8 @@
-# Done
+from telegram import Update
+from telegram.ext import ContextTypes
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 from typing import List, Optional
+from .json_utils import load_json, PLAYERS_FILE
 
 PAGE_SIZE = 5
 
@@ -73,3 +75,15 @@ def calculate_elo_change(winner_rating: int, loser_rating: int, k_factor: int = 
     expected_winner = 1 / (1 + 10 ** ((loser_rating - winner_rating) / 400))
     change = round(k_factor * (1 - expected_winner))
     return change, -change
+
+async def select_player_for_stats(update: Update, context: ContextTypes.DEFAULT_TYPE, logger):
+    """Shows a gallery of all users to select one"""
+    all_players = load_json(PLAYERS_FILE)
+
+    context.user_data["state"] = "SELECT_FOR_STATS"
+    context.user_data["page"] = 0
+    
+    await update.message.reply_text(
+        "Select players for the game:",
+        reply_markup=get_paginated_keyboard(all_players, 0, "select")
+    )
