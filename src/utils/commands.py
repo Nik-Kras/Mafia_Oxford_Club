@@ -7,6 +7,7 @@ from .stats import get_leaderboard, get_game, load_player_stats
 from .game import start_selecting_players
 from .json_utils import load_json, PLAYERS_FILE
 from .utils import get_paginated_keyboard
+from .verification import is_admin
 
 def admin_required():
     def decorator(func):
@@ -101,11 +102,12 @@ async def view_leaderboard(update: Update, context: ContextTypes.DEFAULT_TYPE) -
 
 async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Display help message."""
-    help_text = """
+    if is_admin(update):
+        help_text = """
 🎮 Mafia Oxford Club Bot Commands 🎮
 
 Game Commands:
-/play - Start a new game session
+/play - Start a new game session (Admin only)
 /view_game [game_id] - View game history or specific game
 
 Player Management:
@@ -114,12 +116,31 @@ Player Management:
 /view_players - List all registered players
 
 Statistics:
-/stats <username> - View player statistics
+/stats - View player statistics
 /leaderboard [red|black|elo] - View player rankings
 
 Other:
 /help - Show this message
 
-For more information or help, contact the administrator.
+For more information or help, contact the administrator. @nitosAI
+"""
+    else:
+        help_text = """
+🎮 Mafia Oxford Club Bot Commands 🎮
+
+Game Commands:
+/view_game [game_id] - View game history or specific game
+
+Player Management:
+/view_players - List all registered players
+
+Statistics:
+/stats - View player statistics
+/leaderboard [red|black|elo] - View player rankings
+
+Other:
+/help - Show this message
+
+For more information or help, contact the administrator. @nitosAI
 """
     await update.message.reply_text(help_text)
