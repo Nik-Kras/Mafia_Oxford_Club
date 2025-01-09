@@ -1,14 +1,11 @@
-# Done
 from src.utils.json_utils import load_json, save_json, STATS_FILE, GAMES_FILE, PLAYERS_FILE
 from typing import Dict, List, Optional
 
 def load_player_stats(username: str) -> Optional[Dict]:
     """Load statistics for a specific player."""
-    # NOT IMPLEMENTED
-    # Should parse all games and create statistics
-    # stats = load_json(STATS_FILE)
-    # return stats.get(username, "Not Found")
-    return None
+    generate_stats_dataset()
+    stats = load_json(STATS_FILE)
+    return stats.get(username, None)
 
 def show_last_game():
     games = load_json(GAMES_FILE)

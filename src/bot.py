@@ -66,7 +66,6 @@ def main():
     application.add_handler(CommandHandler("view_game", commands.view_game))
     # application.add_handler(CommandHandler("view_games", commands.view_games)) # NOT IMPLEMENTED: Gallery browse
 
-    
     # Stats commands
     application.add_handler(CommandHandler("stats", commands.view_player_stats))
     application.add_handler(CommandHandler("leaderboard", commands.view_leaderboard))

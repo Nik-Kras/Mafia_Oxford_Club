@@ -1,9 +1,8 @@
-# Done
 from telegram import Update
 from telegram.ext import ContextTypes
 from .utils import get_paginated_keyboard, STATES
 from .game import Game, start_role_assignment, start_killing_phase, start_winner_selection
-from .stats import show_last_game
+from .stats import show_last_game, load_player_stats
 
 async def handle_callback_by_state(update: Update, context: ContextTypes.DEFAULT_TYPE, logger):
     """Route callbacks based on game state."""
@@ -11,7 +10,7 @@ async def handle_callback_by_state(update: Update, context: ContextTypes.DEFAULT
         STATES["SELECTING_PLAYERS"]: handle_player_selection,
         STATES["ASSIGNING_ROLES"]: handle_role_assignment,
         STATES["KILLING_PLAYER"]: handle_killing_phase,
-        STATES["SELECTING_WINNER"]: handle_winner_selection
+        STATES["SELECTING_WINNER"]: handle_winner_selection,
     }
     
     current_state = context.user_data.get("state")
@@ -19,6 +18,8 @@ async def handle_callback_by_state(update: Update, context: ContextTypes.DEFAULT
     
     if handler:
         await handler(update, context, logger)
+    elif current_state == "SELECT_FOR_STATS":
+        await handle_player_stats(update, context, logger)
     else:
         logger.warning("Unhandled state: %s", current_state)
         await update.callback_query.edit_message_text("Invalid game state. Please start a new game.")
@@ -104,3 +105,53 @@ async def handle_winner_selection(update: Update, context: ContextTypes.DEFAULT_
     message += show_last_game()
     
     await query.edit_message_text(message)
+
+async def handle_player_stats(update: Update, context: ContextTypes.DEFAULT_TYPE, logger):
+    query = update.callback_query
+    data = query.data
+
+    if data.startswith("select§"):
+        username = data.split("§")[1]
+        stats = load_player_stats(username)
+        
+        if not stats:
+            await update.message.reply_text(f"No statistics found for {username}")
+            return
+        
+        message = f"📊 Statistics for {username}\n\n"
+        
+        # Team stats
+        message += "Team Performance:\n"
+        for team in ["Team_Red", "Team_Black"]:
+            games = stats[team]["played"]
+            if games > 0:
+                winrate = (stats[team]["won"] / games) * 100
+                survivalrate = (stats[team]["survived"] / games) * 100
+                message += f"{team}: {games} games, {winrate:.1f}% wins, {survivalrate:.1f}% survival\n"
+        
+        # Role stats
+        message += "\nRole Performance:\n"
+        for role in ["Don", "Mafia", "Commissar", "Citizen"]:
+            games = stats[role]["played"]
+            if games > 0:
+                winrate = (stats[role]["won"] / games) * 100
+                survivalrate = (stats[role]["survived"] / games) * 100
+                message += f"{role}: {games} games, {winrate:.1f}% wins, {survivalrate:.1f}% survival\n"
+        
+        # Elo rating
+        message += f"\nElo Rating: {stats['Elo_rating']}"
+
+        await query.edit_message_text(message)
+
+    elif data.startswith("page§"):
+        page = int(data.split("§")[1])
+        context.user_data["page"] = page
+        await query.edit_message_reply_markup(
+            reply_markup=get_paginated_keyboard(
+                context.user_data["remaining_users"],
+                page,
+                "select"
+            )
+        )
+    elif data == "finish":
+        await query.edit_message_text("No players selected.")
