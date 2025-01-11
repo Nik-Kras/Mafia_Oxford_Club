@@ -8,6 +8,7 @@ from .game import start_selecting_players
 from .json_utils import load_json, PLAYERS_FILE
 from .utils import get_paginated_keyboard
 from .verification import is_admin
+from src.utils.logger import log_command_usage
 
 def admin_required():
     def decorator(func):
@@ -21,11 +22,13 @@ def admin_required():
     return decorator
 
 @admin_required()
+@log_command_usage("/play")
 async def play(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Start a new game."""
     await start_selecting_players(update, context)
 
 @admin_required()
+@log_command_usage("/add_player")
 async def add_player(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Add a new player to the database."""
     if not context.args:
@@ -36,6 +39,7 @@ async def add_player(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None
     await update.message.reply_text(result)
 
 @admin_required()
+@log_command_usage("/remove_player")
 async def remove_player(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Remove a player from the database."""
     if not context.args:
@@ -45,6 +49,7 @@ async def remove_player(update: Update, context: ContextTypes.DEFAULT_TYPE) -> N
     result = remove_player_from_db(context.args[0])
     await update.message.reply_text(result)
 
+@log_command_usage("/view_players")
 async def view_players(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Display all registered players."""
     players = get_all_players()
@@ -54,6 +59,7 @@ async def view_players(update: Update, context: ContextTypes.DEFAULT_TYPE) -> No
         message = "No players registered."
     await update.message.reply_text(message)
 
+@log_command_usage("/view_game")
 async def view_game(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Display game history."""
     if not context.args:
@@ -69,6 +75,7 @@ async def view_game(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     
     await update.message.reply_text(message)
 
+@log_command_usage("/view_player_stats")
 async def view_player_stats(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Display player statistics."""
     all_players = load_json(PLAYERS_FILE)
@@ -82,7 +89,7 @@ async def view_player_stats(update: Update, context: ContextTypes.DEFAULT_TYPE) 
         reply_markup=get_paginated_keyboard(all_players, 0, "select")
     )
 
-
+@log_command_usage("/view_leaderboard")
 async def view_leaderboard(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Display player leaderboard."""
     sort_options = {
@@ -98,6 +105,7 @@ async def view_leaderboard(update: Update, context: ContextTypes.DEFAULT_TYPE) -
     leaderboard = get_leaderboard(sort_by)
     await update.message.reply_text(f"```{leaderboard}```", parse_mode='MarkdownV2')
 
+@log_command_usage("/help_command")
 async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Display help message."""
     if is_admin(update):
