@@ -3,31 +3,14 @@ from telegram.ext import Application, CommandHandler, ContextTypes, CallbackQuer
 import src.utils.commands as commands
 import src.utils.handlers as handlers
 from dotenv import load_dotenv
-import logging
 import os
+from src.utils.logger import MafiaLogger
 
 load_dotenv()
 BOT_TOKEN = os.getenv('BOT_TOKEN')
 
-# Set up logging
-LOGS_DIR = "logs"
-LOG_FILE = os.path.join(LOGS_DIR, "bot.log")
-os.makedirs(LOGS_DIR, exist_ok=True)
-
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s - %(levelname)s - %(message)s",
-    handlers=[
-        logging.FileHandler(LOG_FILE),
-        logging.StreamHandler()
-    ]
-)
-
-logger = logging.getLogger("mafia_bot")
-
-# Suppress third-party library logs
-for noisy_logger in ["telegram", "telegram.ext", "urllib3", "requests", "httpx", "httpcore"]:
-    logging.getLogger(noisy_logger).setLevel(logging.WARNING)
+# Initialize single logger instance
+logger = MafiaLogger()
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Welcome message and bot introduction."""
@@ -36,7 +19,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         "I help manage and track Mafia games. Use /help to see available commands."
     )
     await update.message.reply_text(welcome_message)
-    logger.info("User %s started the bot.", update.message.from_user.username)
+    logger.log_command(update, "/start")
 
 async def handle_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Main callback handler for inline buttons."""
@@ -44,8 +27,7 @@ async def handle_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await query.answer()
     
     current_state = context.user_data.get("state", None)
-    logger.info("Handling callback in state: %s", current_state)
-
+    logger.log_callback(update, f"State: {current_state}, Data: {query.data}")
     await handlers.handle_callback_by_state(update, context, logger)
 
 def main():
@@ -64,8 +46,7 @@ def main():
     # Game commands
     application.add_handler(CommandHandler("play", commands.play))
     application.add_handler(CommandHandler("view_game", commands.view_game))
-    # application.add_handler(CommandHandler("view_games", commands.view_games)) # NOT IMPLEMENTED: Gallery browse
-
+    
     # Stats commands
     application.add_handler(CommandHandler("stats", commands.view_player_stats))
     application.add_handler(CommandHandler("leaderboard", commands.view_leaderboard))
